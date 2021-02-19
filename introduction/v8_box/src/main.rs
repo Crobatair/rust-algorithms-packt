@@ -45,4 +45,42 @@ fn main() {
     println!("the lenght of vec is {} and capacity is {}", v.len(), v.capacity());
 	
 
+    let mut s = "     hello      ".to_string();
+    let p = s.trim();
+    let p = p.to_string();
+    println!("p  == '{}'", p);
+    
+    s.push_str("goodbye");
+    println!("p  == '{}'", p);
+
+
+    let fstr = "eqisde xd un string mas";
+    let res = string_find_u(fstr);
+    println!("founded str -> {}", res);
+
+    println!("The choosen one {}", choose_str(1));
+}
+
+
+
+fn string_find_u(s: &str) -> &str {
+    for (n, x) in s.char_indices() {
+        if x == 'u' {
+            return &s[n..]
+        }
+
+    }
+    s
+}
+
+// ' -> used to lifetime that return will be a static and never change when program exist
+// by default compiler knows, but if it cannot  infiere it, you need to specify lifetime
+fn choose_str(n: i32) -> & 'static str {
+    match n {
+        0 => "hello",
+        1 => "goodbye",
+        _ => "uwu",
+
+    }
+
 }
