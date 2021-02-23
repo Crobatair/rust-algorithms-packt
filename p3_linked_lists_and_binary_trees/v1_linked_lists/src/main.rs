@@ -35,7 +35,7 @@ impl <T: Debug> LinkedList<T> {
             Some((_, ref mut child)) => {
                 match index {
                     Some(i) => {
-                        /// if index is 0, push to front
+                        // if index is 0, push to front
                         if i == 0 {
                             self.push_front(data)
                         } else if i >= 1 {
