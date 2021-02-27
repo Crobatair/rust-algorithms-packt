@@ -35,4 +35,12 @@ Covered Themes:
   - Added a timmer to log the performance between different algorithms to calculate [fibonacci sequence](https://en.wikipedia.org/wiki/Fibonacci_number)
   - Dynamic Programming Definition [Here](https://en.wikipedia.org/wiki/Dynamic_programming)
   - Tail Recursive [Here](https://en.wikipedia.org/wiki/Tail_call)
+----
+### p3 - Linked lists and binary 
+
+> Projects related to Lists, Binary Trees, and Huffman Coder Algorithm implementation on Rust.
+
+- [Linked Lists](../main/p3_linked_lists_and_binary_trees/v1_linked_lists/src/main.rs)
+- [Double Linked Lists](../main/p3_linked_lists_and_binary_trees/v2_double_linked_lists/src/main.rs)
+
 
