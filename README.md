@@ -1,5 +1,10 @@
 # rust-algorithms-packt
 
+This repository contains my experience coding on Rust while i'm watching [__Hands-On Data Structures and Algorithms in Rust__](https://subscription.packtpub.com/video/programming/9781839211942) by [Matthew Stoodley](https://www.packtpub.com/authors/matthew-stoodley), May 2020.
+
+Feel free to contribute or clone this project. Any suggestion or comment is welcome.
+
+
 
 -----
 ### p1_introduction
