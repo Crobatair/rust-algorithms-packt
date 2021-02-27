@@ -42,5 +42,19 @@ Covered Themes:
 
 - [Linked Lists](../main/p3_linked_lists_and_binary_trees/v1_linked_lists/src/main.rs)
 - [Double Linked Lists](../main/p3_linked_lists_and_binary_trees/v2_double_linked_lists/src/main.rs)
+- [Binary Trees](../main/p3_linked_lists_and_binary_trees/v4_binary_trees/src/main.rs)
+- [Balance Binary Trees](../main/p3_linked_lists_and_binary_trees/v5_balance_binary_tree/src/main.rs)
+- [Skip lists](../main/p3_linked_lists_and_binary_trees/v6_skip_lists/src/main.rs)
+  - Print list elements as custom std::fmt::Display
+- [Huffman coder](../main/p3_linked_lists_and_binary_trees/v7_huffman_encodign/src/main.rs)
+  - [Huffman coder](https://en.wikipedia.org/wiki/Huffman_coding) implementation.
+  - From a string, builds a Huffman Coder.
+  - As Assignment, is added an method to decode an encoded string.
+  - As extra, has been added a method to get all encoded chars.
+
+
+
+
+
 
 
