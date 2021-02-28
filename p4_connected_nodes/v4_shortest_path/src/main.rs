@@ -48,40 +48,61 @@ impl <T, E, ID: Clone+Hash + Eq> Graph<T, E, ID>{
 }
 
 
+// implement trait for E: Weighted
 impl <T, E: Weighted, ID: Clone + Hash + Eq> Graph<T, E, ID>{
 
-    
+    // impl of shortest_path *if E with trait of Weighted
+    // *for this reason, has been implemented trait Weighted on i32 on traits.rs
     pub fn shortest_path(&self, from: ID, to: ID) -> Option<Rc<Route<ID>>> {
+        
         let mut visited = HashSet::new();
         let mut routes = Vec::new();
 
+        // we need to retrieve a array of nodes on short, so we create a new array
         routes.push(Route::start_rc(from));
+        
         loop {
+            // pop from routes
             let c_route = routes.pop()?;
+            
+            // if to == current position, just return node ( direct node )
             if to == c_route.pos {
                 return Some(c_route);
             }
 
+            // if i have already visited this node, just skip ( dont iterate over visited nodes to recursive error )
             if visited.contains(&c_route.pos) {
                 continue;
             }
-
+            // insert cloned of c_route because it will consume
             visited.insert(c_route.pos.clone());
+
+            // get from the hashmap the current element ?> because it can be not there
             let exits = self.data.get(&c_route.pos)?;
+
+            // .1 -> from
+            // .2 -> to
             for eid in &exits.1 {
+                // try to get if edge if exist on edges of self 
                 let edge = self.edges.get(eid)?;
+                // test if from == current_position
                 let npos = if edge.1 == c_route.pos {
-                    // oposite side of edge to current pos
+                    // oposite side of edge to current pos ( to )
                     edge.2.clone()
                 } else {
                     edge.1.clone()
                 };
+                // sum the len of passed route with edge weight
                 let nlen = c_route.len + edge.0.weight();
+
+                // create the route object
                 let nroute = Rc::new(Route{
                     pos: npos,
                     len: nlen,
                     path: Some(c_route.clone()), 
                 });
+
+                // if the route is len -> 0
                 if routes.len() == 0 {
                     routes.push(nroute);
                     continue;
@@ -90,6 +111,9 @@ impl <T, E: Weighted, ID: Clone + Hash + Eq> Graph<T, E, ID>{
                 // insert into the list sorted
                 let mut iafer = routes.len() - 1;
                 loop {
+
+                    // if routes
+                    // compare lens 
                     if routes[iafer].len > nlen {
                         routes.insert(iafer+1, nroute);
                         break;
