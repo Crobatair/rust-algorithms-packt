@@ -5,7 +5,7 @@ This module contains information related to how to build a node graph on Rust.
 
 The follow image taken from Course and it used on all chapter.
 
-![graph](../main/p4_connected_nodes/graph.png?raw=true)
+![graph](https://github.com/crobatair/rust-algorithms-packt/blob/main/p4_connected_nodes/graph.png?raw=true)
 
 
 
