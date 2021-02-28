@@ -18,3 +18,8 @@ Implemented a basic add node, and add edge methods.
 On [v3_router_structure](../../main/p4_connected_nodes/v3_router_structure/src/main.rs) moved err to a module and added a test to test if new Err class, instance, contains a mess with asserteq on message.
 Also,  created a trait for i32 and impl trait.
 
+On [v4_shortest_path](../../main/p4_connected_nodes/v4_shortest_path/src/main.rs) is implemented the method to find the shortest path from __A__ to a point __B__.
+> If run cargo run on this folder, will return the shortest path on __from: A, to: D__.
+The short path to **A** -> **D** is: **'A'-7-'H'-13-'D'**
+
+![shortest_path_a_to_d](https://github.com/crobatair/rust-algorithms-packt/blob/main/p4_connected_nodes/shortest_path_a_to_d.png?raw=true)
