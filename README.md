@@ -57,7 +57,10 @@ Covered Themes:
   - As Assignment, is added an method to decode an encoded string.
   - As extra, has been added a method to get all encoded chars.
 
+----
+### Part 3 - Graps.
 
+Please go to Part 3 readme.md [here](../main/p4_connected_nodes).
 
 
 
