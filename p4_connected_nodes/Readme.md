@@ -8,3 +8,6 @@ In [v1_graphs_connected_nodes](../../main/p4_connected_nodes/v1_graphs_connected
 
 On [v2_graphs](../../main/p4_connected_nodes/v2_graphs/src/main.rs) its implemented a graph on pointer based.
 Implemented a basic add node, and add edge methods.
+
+On [v3_router_structure](../../main/p4_connected_nodes/v3_router_structure/src/main.rs) moved err to a module and added a test to test if new Err class, instance, contains a mess with asserteq on message.
+Also,  created a trait for i32 and impl trait.
