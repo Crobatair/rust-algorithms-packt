@@ -132,35 +132,32 @@ impl <T, E: Weighted, ID: Clone + Hash + Eq> Graph<T, E, ID>{
     }
 
 
+    // this method, iterate over all ids, and find the shortest path if not contains pos 0
     pub fn complete_path(&self, path: &[ID]) -> Option<Rc<Route<ID>>> {
         if path.len() < 2{
             return None;
         }
-
         let mut route = Route::start_rc(path[0].clone());
-
         // pos is a pointer to the slice, dont copy or clone anything
         for pos in &path[1..path.len()-1] {
             if ! route.contains(pos){
                 route = self.shortest_path_r(route, pos.clone())?;
             }
         }
-
         self.shortest_path_r(route, path[path.len() - 1].clone())
     }
-
-
-
-
 }
 
 
 impl <T, E: Weighted, ID: Clone + Hash + Eq + fmt::Debug> Graph<T, E, ID>{
 
     pub fn iter_salesman(&self, start: ID) -> Option<Rc<Route<ID>>> {
+        // a new vector of ids
         let mut bpath: Vec<ID> = self.data.keys().map(|x| x.clone()).collect();
+        // randomly shuffle vector positions
         bpath.shuffle(&mut rand::thread_rng());
 
+        // for to iterate over vec array, and return as first position the start
         for n in 0..bpath.len() {
             if bpath[n] == start {
                 bpath.swap(0, n);
@@ -169,7 +166,10 @@ impl <T, E: Weighted, ID: Clone + Hash + Eq + fmt::Debug> Graph<T, E, ID>{
         }
 
         bpath.push(start);
+        // calculate a provisional best route with basic method
         let mut broute = self.complete_path(&bpath)?;
+
+        // declared a var to store number of iterations without improvements
         let mut no_imp = 0;
         loop {
             let mut p2 = bpath.clone();
@@ -178,6 +178,9 @@ impl <T, E: Weighted, ID: Clone + Hash + Eq + fmt::Debug> Graph<T, E, ID>{
 
             p2.swap(sa, sb);
             let r2 = self.complete_path(&p2)?;
+
+            // with calculted random route, if len is less than current best, use new improvements
+            // improvement is restarted to iterate over new route to try to improve
             if r2.len < broute.len {
                 println!("Improvement on {} = \n{}", broute, r2);
                 bpath = p2;
@@ -185,18 +188,13 @@ impl <T, E: Weighted, ID: Clone + Hash + Eq + fmt::Debug> Graph<T, E, ID>{
                 no_imp = 0;
             }
 
+            // try to find best route until 50 iterations...
             no_imp += 1;
             if no_imp >= 50 {
                 return Some(broute);
             }
-
         }
-
-
     }
-
-
-
 }
 
 
