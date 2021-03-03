@@ -121,7 +121,7 @@ impl <K: Hash + Eq, V> HMap<K, V> {
         }
 
         // if not exists on main, it can be on grow list, because remains to move to main array
-        if let Some(iv) = self.main.get_mut(&k){
+        if let Some(iv) = self.grow.get_mut(&k){
             *iv = v;
             return;
         }
@@ -170,9 +170,9 @@ impl <K: Hash + Eq, V> HMap<K, V> {
     pub fn move_bucket(&mut self){
         // if you dont have any to move, just create buckets to grow main hashmap *high cost op, when the hashmap grows, so space already reserved to grow BGROW/
         if self.n_moved == 0 {
-            self.grow.set_buckets(self.main.buckets.len() + BGROW);
+            self.grow.set_buckets(self.main.buckets.len() *2 );
         }
-        
+
         // i will be not owned by main when used
         if let Some(b) = self.main.bucket(self.n_moved){
             for (k, v) in b {
@@ -191,8 +191,52 @@ impl <K: Hash + Eq, V> HMap<K, V> {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    fn test_get_right_values() {
+        let mut hm = HMap::new();
+        hm.insert("james".to_string(), 18);
+        hm.insert("dave".to_string(), 45);
+        hm.insert("andy".to_string(), 23);
+        hm.insert("pete".to_string(), 14);
+        hm.insert("steve".to_string(), 90);
+        hm.insert("jane".to_string(), 105);
+        hm.insert("grader".to_string(), 23);
+        hm.insert("irene".to_string(), 65);
+        hm.insert("sam".to_string(), 66);
+        hm.insert("andrex".to_string(), 77);
+        hm.insert("andrew".to_string(), 89);
+        hm.insert("geralt".to_string(), 99);
+        // repeated dave
+        hm.insert("dave".to_string(), 83);
+
+
+        assert_eq!(hm.get("geralt"), Some(&99));
+        assert_eq!(hm.get("sam"), Some(&66));
+        assert_eq!(hm.get("dave"), Some(&83));
+
+        assert_eq!(hm.len(), 12);
+
+        //println!("hm = {:?}", hm);
+        //panic!("");
     }
+
+    #[test]
+    fn test_lots_of_numbers() {
+
+        let mut hm = HMap::new();
+        for x in 0..10000 {
+            hm.insert(x, x+250);
+        }
+
+        assert_eq!(hm.len(), 10000);
+        assert_eq!(hm.get(&500), Some(&750));
+
+        for (n, x) in hm.main.buckets.iter().enumerate() {
+            assert!(x.len() < 15, format!("buckets too big {}:{}", n, x.len()));
+        }
+
+    }
+
 }
