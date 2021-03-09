@@ -1,0 +1,19 @@
+[package]
+name = "blobfile"
+version = "0.1.0"
+authors = ["Alejandro Vásquez Madrid <jose5m45@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde="1.0.104"
+serde_derive = "1.0.104"
+
+bincode = "1.2.1"
+
+failure = "0.1.6"
+failure_derive = "0.1.6"
+
+rand = "0.7.2"
+v3_finish_hashmap = {path = "../../p5_hashmap/v3_finish_hashmap/"}

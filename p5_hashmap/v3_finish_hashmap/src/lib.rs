@@ -1,5 +1,5 @@
 mod hasher;
-use std::hash::Hash;
+pub use std::hash::Hash;
 use std::borrow::Borrow;
 
 use hasher::hash;
