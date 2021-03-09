@@ -103,6 +103,27 @@ pub fn render_sys<T:std::io::Write,  P:EcsStore<Pos>, S:EcsStore<Strenght>>(t: &
 }
 
 pub fn death_sys<S:EcsStore<Strenght>, P: EcsStore<Pos>, D:EcsStore<Dir>>(g: &mut GenManager, ss:&mut S, pp:&mut P, dd: &mut D){
+  let mut to_kill = Vec::new();
+  let (w, h) = termion::terminal_size().unwrap();
+  let (w, h) = ( w as i32, h as i32 );
+  pp.for_each(|g, p| if p.x > w || p.x < 0 || p.y > h || p.y < 0 {
+    to_kill.push(g);
+  });
+
+  ss.for_each(|g, s| {
+    if s.h <= 0 {
+      to_kill.push(g);
+    }
+  });
+
+  for tk in to_kill{
+    g.drop(tk);
+    pp.drop(tk);
+    ss.drop(tk);
+    dd.drop(tk);
+
+  }
+
 
 
 }
