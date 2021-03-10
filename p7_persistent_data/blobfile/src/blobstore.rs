@@ -107,9 +107,5 @@ mod test {
     let blocksize = bs.block_size;
     let mut b2 = BlobStore::open(fs).unwrap();
     assert_eq!(b2.block_size, blocksize);
-
-
   }
-
-
 }
