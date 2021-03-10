@@ -1,6 +1,6 @@
 pub mod blob;
 pub mod error;
-
+pub mod blobstore;
 
 #[cfg(test)]
 mod tests {
