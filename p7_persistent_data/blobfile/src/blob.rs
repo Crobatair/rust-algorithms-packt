@@ -38,7 +38,7 @@ impl Blob{
     Ok(())
   }
 
-  pub fn read<R: std::io::Read>(r: &mut R) -> Result<Blob, failure::Error> {
+  pub fn read<R: std::io::Read>(r: &mut R) -> Result<Blob, BlobError> {
     let klen = read_u64(r)? as usize;
     let vlen = read_u64(r)? as usize;
     let mut k = vec![0u8; klen];

@@ -26,7 +26,7 @@ impl BlobStore {
       .open(fname)?;
     
     let f = &mut ff;
-    f.set_len(CONT_SIZE + block_size * nblocks);
+    f.set_len(CONT_SIZE + block_size * nblocks)?;
     f.seek(SeekFrom::Start(0))?;
     write_u64(f, hseed)?;
     write_u64(f, block_size)?;
@@ -100,7 +100,7 @@ impl BlobStore {
 
     let bucket = blob.k_hash(self.hseed) % self.nblocks;
     let f = &mut self.file;
-    let mut pos = f.seek(SeekFrom::Start(CONT_SIZE + self.block_size + self.block_size))?;
+    let mut pos = f.seek(SeekFrom::Start(CONT_SIZE + self.block_size * bucket))?;
     loop {
       if pos > CONT_SIZE +self.block_size *(bucket+1) {
         return Err(BlobError::NoRoom)
@@ -116,10 +116,39 @@ impl BlobStore {
         write_u64(f, (vlen - blob.len())-16)?;
         return Ok(());
       }
+      pos = f.seek(SeekFrom::Start(pos + 16 + klen + vlen))?;
 
     }
 
   }
+
+  pub fn b_start(&self, b: u64) -> u64 {
+    CONT_SIZE + self.block_size * b
+  }
+
+  pub fn get<K: Serialize>(&mut self, k: &K) -> Result<Blob, BlobError>{
+
+    let s_blob = Blob::from(k, &0)?;
+    let bucket = s_blob.k_hash(self.hseed) % self.nblocks;
+    let b_start = self.b_start(bucket);
+    let b_end = self.b_start(bucket+1);
+
+    let f = &mut self.file;
+    let mut pos = f.seek(SeekFrom::Start(b_start))?;
+    loop {
+      if pos >= b_end {
+        return Err(BlobError::NotFound);
+      }
+      let b = Blob::read(f)?;
+      if b.key_match(&s_blob){
+        return Ok(b);
+      }
+
+      pos += b.len();
+    }
+
+  }
+
 
 
 }
@@ -140,7 +169,14 @@ mod test {
     assert_eq!(b2.block_size, blocksize);
 
     b2.insert_only("fish", "so loing and thanks all the fish").unwrap();
+    b2.insert_only(23, "equisde xd im a string").unwrap();
+    b2.insert_only("green", "wats up, im a green").unwrap();
+    b2.insert_only("happy", "is friend with sleepy").unwrap();
 
+    drop(b2);
+
+    let mut b3 = BlobStore::open(fs).unwrap();
+    assert_eq!(b3.get(&"green").unwrap().get_v::<String>().unwrap(), "wats up, im a green".to_string());
 
   }
 }
