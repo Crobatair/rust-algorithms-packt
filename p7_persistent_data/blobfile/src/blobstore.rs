@@ -92,6 +92,13 @@ impl BlobStore {
     Ok(())
   }
 
+  fn insert<K: Serialize, V: Serialize>(&mut self, k: K, v: V) -> Result<(), BlobError> {
+
+    self.remove(&k).ok();
+    self.insert_only(k, v)
+  }
+
+
   fn insert_only<K: Serialize, V: Serialize>(&mut self, k: K, v: V) -> Result<(), BlobError> {
     let blob = Blob::from(&k, &v).unwrap();
     if blob.len() > self.block_size {
@@ -114,6 +121,7 @@ impl BlobStore {
         // add pointer immediately after data ends
         write_u64(f, 0)?;
         write_u64(f, (vlen - blob.len())-16)?;
+        self.inc_elems(1)?;
         return Ok(());
       }
       pos = f.seek(SeekFrom::Start(pos + 16 + klen + vlen))?;
@@ -149,7 +157,43 @@ impl BlobStore {
 
   }
 
+  pub fn remove<K: Serialize>(&mut self, k: &K) -> Result<(), BlobError> {
+    let s_blob = Blob::from(k, &0)?;
+    let bucket = s_blob.k_hash(self.hseed) % self.nblocks;
+    let b_start = self.b_start(bucket);
+    let b_end = self.b_start(bucket+1);
 
+    let f = &mut self.file;
+    let mut pos = f.seek(SeekFrom::Start(b_start))?;
+    loop {
+      if pos >= b_end {
+        return Ok(());
+      }
+      
+      let b = Blob::read(f)?;
+      if b.key_match(&s_blob){
+        let l = b.len();
+        if pos + l < b_end {
+          if read_u64(f)? == 0 {
+            let nlen = read_u64(f)?;
+            f.seek(SeekFrom::Start(pos))?;
+            write_u64(f, 0)?;
+            write_u64(f, l + nlen + 16)?;
+            return Ok(());
+          }
+        }
+        f.seek(SeekFrom::Start(pos))?;
+        write_u64(f, 0)?;
+        write_u64(f, l -16)?;
+        self.inc_elems(-1);
+        return Ok(());
+
+      }
+
+      pos = f.seek(SeekFrom::Start(pos + b.len()))?;
+
+    }
+  }
 
 }
 
@@ -177,6 +221,10 @@ mod test {
 
     let mut b3 = BlobStore::open(fs).unwrap();
     assert_eq!(b3.get(&"green").unwrap().get_v::<String>().unwrap(), "wats up, im a green".to_string());
+
+    b3.remove(&"green").ok();
+    assert!(b3.get(&"green").is_err());
+    assert!(b3.get(&"fish").is_ok());
 
   }
 }
