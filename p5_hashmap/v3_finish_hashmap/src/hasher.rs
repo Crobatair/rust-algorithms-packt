@@ -2,8 +2,8 @@
 use std::hash::{Hash, Hasher};
 
 pub struct MHash {
-  prev: u8,
-  n: u128,
+  pub prev: u8,
+  pub n: u128,
 
 }
 

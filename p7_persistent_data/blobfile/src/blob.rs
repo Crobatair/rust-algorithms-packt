@@ -21,14 +21,12 @@ pub struct Blob{
 }
 
 impl Blob{
-  pub fn from<K:Serialize, V:Serialize>(k: &K, v: &V) -> Result<Blob, bincode::Error> {
-    Ok(
-      Blob{
-        k: bincode::serialize(k)?,
-        v: bincode::serialize(v)?,
-      }
-    )
-  }
+  pub fn from<K:Serialize,V:Serialize>(k:&K,v:&V)-> Result<Blob,bincode::Error>{
+    Ok(Blob{
+        k:bincode::serialize(k)?,
+        v:bincode::serialize(v)?,
+    })
+}
 
   pub fn out<W: std::io::Write>(&self, w: &mut W) -> Result<(), BlobError> {
     let klen = bincode::serialize(&self.k.len())?;

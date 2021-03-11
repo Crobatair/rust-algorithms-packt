@@ -1,6 +1,6 @@
 use std::fs::{File, OpenOptions};
 use std::io::{Seek, SeekFrom};
-
+use serde::{Serialize, Deserialize};
 
 use crate::blob::{read_u64, write_u64, Blob};
 use crate::error::BlobError;
@@ -41,13 +41,13 @@ impl BlobStore {
     }
 
     Ok(
-      BlobStore {
+      {BlobStore {
         hseed,
         file: ff,
         block_size,
         nblocks,
         elems: 0,
-      }
+      }}
     )
   }
 
@@ -91,6 +91,37 @@ impl BlobStore {
     write_u64(&mut self.file, self.elems)?;
     Ok(())
   }
+
+  fn insert_only<K: Serialize, V: Serialize>(&mut self, k: K, v: V) -> Result<(), BlobError> {
+    let blob = Blob::from(&k, &v).unwrap();
+    if blob.len() > self.block_size {
+      return Err(BlobError::TooBig(blob.len()))
+    }
+
+    let bucket = blob.k_hash(self.hseed) % self.nblocks;
+    let f = &mut self.file;
+    let mut pos = f.seek(SeekFrom::Start(CONT_SIZE + self.block_size + self.block_size))?;
+    loop {
+      if pos > CONT_SIZE +self.block_size *(bucket+1) {
+        return Err(BlobError::NoRoom)
+      }
+
+      let klen = read_u64(f)?;
+      let vlen = read_u64(f)?;
+      if klen == 0 &&blob.len() < vlen {
+        f.seek(SeekFrom::Start(pos))?;
+        blob.out(f);
+        // add pointer immediately after data ends
+        write_u64(f, 0)?;
+        write_u64(f, (vlen - blob.len())-16)?;
+        return Ok(());
+      }
+
+    }
+
+  }
+
+
 }
 
 
@@ -107,5 +138,9 @@ mod test {
     let blocksize = bs.block_size;
     let mut b2 = BlobStore::open(fs).unwrap();
     assert_eq!(b2.block_size, blocksize);
+
+    b2.insert_only("fish", "so loing and thanks all the fish").unwrap();
+
+
   }
 }

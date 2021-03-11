@@ -1,4 +1,4 @@
-mod hasher;
+pub mod hasher;
 pub use std::hash::Hash;
 use std::borrow::Borrow;
 
